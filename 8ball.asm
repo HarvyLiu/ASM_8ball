@@ -14,17 +14,25 @@ section .data
 	msg5 db "Perhaps you should try low level", 10
 	len5 equ $ - msg5
 
-	msgs dq msg0, msg1, msg2, msg3, msg4, msg5
+	msgs dq msg0, msg1, msg2, msg3, msg4, msg5 ; creates a list sort of stuff
 	lens dq len0, len1, len2, len3, len4, len5
 
 
 section .text
 	global _start
 _start:
+	rdtsc ; basically this reads a timestamp and dumps it into edx:eax eax changes fast and edx changes slowly
+	xor edx, edx ; since we want randomness we use lower half (xoring edx leaves 0 which clears the upper half) 'cause it spins faster
+	mov ecx, 6 ; this is the msg count we have, which we will use to divide
+	div ecx ; div ecx divides edx:eax and the result is edx: remainder, eax: quotient
+	mov ecx, edx ; store num in ecx
+	shl rcx, 3 ; left shift 3 so multiply 8 which is used later to search address
+
+	;==========================================================
 	mov rax, 1 ; What should it do? 1 = sys_write
 	mov rdi, 1 ; And to where? 1 = screen (0 = keyboard)
-	mov rsi, [msgs] ; Which bytes? the address? 
-	mov rdx, [lens] ; How many?
+	mov rsi, [msgs + rcx] ; Which bytes? the address? 
+	mov rdx, [lens + rcx] ; How many?
 	syscall ; Linux gets instructions and does the work, prints
 	;===================================================================================
 	mov rax, 60 ; 60 = sys_exit 
