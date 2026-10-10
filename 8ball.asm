@@ -1,4 +1,5 @@
 section .data
+	inlen equ 8
 	hello db "Hello! Always standing by, ASM 8ball!!! The 8ball for devs", 10
 	hl equ $ - hello   ; So I don't have to count manually how many bytes (len: a var (length), equ: set const, $: current loc, msg: a var)
 	msg0 db "Go for it", 10
@@ -16,11 +17,33 @@ section .data
 
 	msgs dq msg0, msg1, msg2, msg3, msg4, msg5 ; creates a list sort of stuff
 	lens dq len0, len1, len2, len3, len4, len5
-
+section .bss 
+	input resb inlen ;reserve 8 bytes 
 
 section .text
 	global _start
 _start:
+	mov rax, 1 
+	mov rdi, 1 
+	mov rsi, hello 
+	mov rdx, hl 
+	syscall
+again:
+	mov rax, 1 
+	mov rdi, 1 
+	mov rsi, prompt 
+	mov rdx, plen
+	syscall 
+
+	mov rax, 0 ; sys_read
+	mov rdi, 0 ; keyboard 
+	mov rsi, input
+	mov rdx, inlen 
+	syscall
+
+	cmp byte [input] 'q' ; first typed byte  = 'q'?  cmp = sort of like compare, but it subtracts then throws is it 0 (throws flag ZF = 0 or 1)? byte to specify the size to operate, which here is one byte, might be dword qword also.
+	je done ; if yes, jump to exit. je = jmp only if equal (ZF = 1, which means true in language)
+
 	rdtsc ; basically this reads a timestamp and dumps it into edx:eax eax changes fast and edx changes slowly
 	xor edx, edx ; since we want randomness we use lower half (xoring edx leaves 0 which clears the upper half) 'cause it spins faster
 	mov ecx, 6 ; this is the msg count we have, which we will use to divide
@@ -34,7 +57,10 @@ _start:
 	mov rsi, [msgs + rcx] ; Which bytes? the address? 
 	mov rdx, [lens + rcx] ; How many?
 	syscall ; Linux gets instructions and does the work, prints
+	
+	jmp again ; jump back to the start of the prompt, forever
 	;===================================================================================
+done:
 	mov rax, 60 ; 60 = sys_exit 
 	xor rdi, rdi ; basically mov rdi, 0, but it's somehow faster, using xor technique, rdi = rdi for each bit so = 0
 	syscall ; exits code cleanly else CPU wanders past my code into garbage and crashes.
