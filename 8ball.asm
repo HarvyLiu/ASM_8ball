@@ -1,5 +1,7 @@
 section .data
 	inlen equ 8
+	prompt db "Ask the oracle (ENTER = wisdom, q + ENTER = quit): ", 10
+	plen equ $ - prompt
 	hello db "Hello! Always standing by, ASM 8ball!!! The 8ball for devs", 10
 	hl equ $ - hello   ; So I don't have to count manually how many bytes (len: a var (length), equ: set const, $: current loc, msg: a var)
 	msg0 db "Go for it", 10
