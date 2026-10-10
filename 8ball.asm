@@ -41,7 +41,7 @@ again:
 	mov rdx, inlen 
 	syscall
 
-	cmp byte [input] 'q' ; first typed byte  = 'q'?  cmp = sort of like compare, but it subtracts then throws is it 0 (throws flag ZF = 0 or 1)? byte to specify the size to operate, which here is one byte, might be dword qword also.
+	cmp byte [input], 'q' ; first typed byte  = 'q'?  cmp = sort of like compare, but it subtracts then throws is it 0 (throws flag ZF = 0 or 1)? byte to specify the size to operate, which here is one byte, might be dword qword also.
 	je done ; if yes, jump to exit. je = jmp only if equal (ZF = 1, which means true in language)
 
 	rdtsc ; basically this reads a timestamp and dumps it into edx:eax eax changes fast and edx changes slowly
