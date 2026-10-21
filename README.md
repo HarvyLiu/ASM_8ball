@@ -19,6 +19,7 @@ ld 8ball.o -o 8ball
 * ~~Prints text~~
 * ~~Random text output~~
 * ~~Input availible~~
+* ~~Added quit functionality~~
 * Fix input and loop bugs
 * Read file and output text from a fixed file
 * File customization with random output
